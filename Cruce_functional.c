@@ -26,7 +26,7 @@ void Impartire_carti (int *carti_amestecate, int carti_jucatori[4][6])
 
 void decodor (int carte)
 {
-    if(carte!=-1)
+    if(carte!=66)
     {
         printf("%d ",carte);
 
@@ -73,7 +73,7 @@ int decodor_punctaj (int carte)
     }
     return -1;
 }
-///
+
 
 int cine_le_ia(int masa[8], int tromf)
 {
@@ -116,7 +116,7 @@ void stergerea_cartii_alese(int carti_jucatori[4][6], int masa[8])
             {
                 if(carti_jucatori[i][j]==masa[k])
                 {
-                    carti_jucatori[i][j]=-1;
+                    carti_jucatori[i][j]=66;
                     
                 }
             }
@@ -128,7 +128,7 @@ int verificare_carte_aleasa_sa_fie_a_jucatorului(int carti_jucatori[4][6], int c
 {
     for(int i=0; i<6; i++)
     {
-        if(carti_jucatori[cine_va_face][i]==carte_aleasa)
+        if(carti_jucatori[cine_va_face][i]==carte_aleasa  && carte_aleasa!=66)
         {
             return carte_aleasa;
         }
@@ -153,7 +153,7 @@ int verificare_trisare(int carti_jucatori[4][6], int masa[8], int carte_aleasa, 
     {
         for(int i=0; i<6; i++)
         {
-            if(carti_jucatori[cine_va_face][i]/6==carte_aleasa/6)
+            if(carti_jucatori[cine_va_face][i]/6==masa[0]/6)
             {
                 corect=0;
                 break;
@@ -170,7 +170,7 @@ int verificare_trisare(int carti_jucatori[4][6], int masa[8], int carte_aleasa, 
             {
                 if(carti_jucatori[cine_va_face][i]/6==tromf/6)
                 {
-                    corect=0;
+                    corect=3;
                     break;
                 }
             }
@@ -178,13 +178,22 @@ int verificare_trisare(int carti_jucatori[4][6], int masa[8], int carte_aleasa, 
     }
     if(corect==0)
     {
-        printf("Nu trisa!!!\n");
+        printf("Ai carte in mana de acelasi fel ca prima!!!\n");
         printf("Introdu alta carte:\n");
         scanf("%d", &carte_aleasa);
         carte_aleasa=verificare_trisare(carti_jucatori, masa, carte_aleasa, cine_va_face,tromf);
         return carte_aleasa;
     }
-    else 
+    else
+    if(corect==3)
+        {
+            printf("Ai carte de tromf in mana!!!\n");
+            printf("Introdu alta carte:\n");
+            scanf("%d", &carte_aleasa);
+            carte_aleasa=verificare_trisare(carti_jucatori, masa, carte_aleasa, cine_va_face,tromf);
+            return carte_aleasa;
+        }
+    else    
     return carte_aleasa;
     
 }
@@ -193,7 +202,7 @@ void resetare_masa (int masa[8])
 {
     for(int i=0; i<8; i++)
     {
-        masa[i]=-1;
+        masa[i]=66;
     }
 }
 
@@ -310,6 +319,11 @@ int main(void)
             }
             scanf("%d", &carte_aleasa);
             carte_aleasa=verificare_trisare(carti_jucatori,masa,carte_aleasa, ajutor_masa[j+cine_va_face],tromf);
+            if(carte_aleasa==-10)
+            {
+                printf("Eroare!!!\n");
+                return 0;
+            }
             masa[j]=carte_aleasa;
             masa[j+4]=masa[j];
         }
@@ -366,6 +380,11 @@ int main(void)
                 }
                 scanf("%d", &carte_aleasa);
                 carte_aleasa=verificare_trisare(carti_jucatori,masa,carte_aleasa, ajutor_masa[j+cine_va_face],tromf);
+                if(carte_aleasa==-10)
+                {
+                    printf("Eroare!!!\n");
+                    return 0;
+                }
                 masa[j]=carte_aleasa;
                 masa[j+4]=masa[j];
             }
@@ -394,46 +413,52 @@ int main(void)
             cine_va_face=(cine_le_ia(masa,tromf)+cine_va_face)%4;
 
             resetare_masa(masa);
-
         }
-            int cine_mare;
-            int marele=0;
-            for(int i=0; i<4; i++)
-            {
-                if(cate_faci[i]>marele)
-                {
-                    marele=cate_faci[i];
-                    cine_mare=i;
-                }
-            }
 
-            if(cine_mare%2==0)
+        int cine_mare;
+        int marele=0;
+        for(int i=0; i<4; i++)
+        {
+            if(cate_faci[i]>marele)
             {
-                if(parii/33<marele)
-                    {
-                        punctaj_echipa_para=punctaj_echipa_para-marele;
-                        punctaj_echipa_impara=punctaj_echipa_impara+imparii/33;
-                    }
-                else
-                    {
-                        punctaj_echipa_para=punctaj_echipa_para+parii/33;
-                        punctaj_echipa_impara=punctaj_echipa_impara+imparii/33;
-                    }    
+                marele=cate_faci[i];
+                cine_mare=i;
+            }
+        }
+
+        if(cine_mare%2==0)
+        {
+            if(parii/33<marele)
+            {
+                punctaj_echipa_para=punctaj_echipa_para-marele;
+                punctaj_echipa_impara=punctaj_echipa_impara+imparii/33;
             }
             else
             {
-                if(imparii/33<marele)
-                    {
-                        punctaj_echipa_impara=punctaj_echipa_impara-marele;
-                        punctaj_echipa_para=punctaj_echipa_para+parii/33;
-                    }
-                else
-                    {
-                        punctaj_echipa_para=punctaj_echipa_para+parii/33;
-                        punctaj_echipa_impara=punctaj_echipa_impara+imparii/33;
-                    }    
+                punctaj_echipa_para=punctaj_echipa_para+parii/33;
+                punctaj_echipa_impara=punctaj_echipa_impara+imparii/33;
+            }    
+        }
+        else
+        {
+            if(imparii/33<marele)
+            {
+                punctaj_echipa_impara=punctaj_echipa_impara-marele;
+                punctaj_echipa_para=punctaj_echipa_para+parii/33;
             }
+            else
+            {
+                punctaj_echipa_para=punctaj_echipa_para+parii/33;
+                punctaj_echipa_impara=punctaj_echipa_impara+imparii/33;
+            }    
+        }
+
+        imparii=0;
+        parii=0;
+        printf("punctaj impari: %d, %d\n",imparii,punctaj_echipa_impara);
+        printf("punctaj pari: %d, %d\n",parii,punctaj_echipa_para);
         
+        runda=runda+1;
     }
     if(punctaj_echipa_impara>punctaj_echipa_para)
         printf("Echipa imparilor a castigat cu %d puncte!\n", punctaj_echipa_impara);
@@ -441,6 +466,6 @@ int main(void)
         printf("Echipa parilor a castigat cu %d puncte!\n", punctaj_echipa_para);
     else
         printf("Remiza!\n");
-    
+        
     return 0;
 }
