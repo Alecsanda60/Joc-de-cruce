@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+void Generare_pachet (int carti_de_joc[24])
+{
+  for (int i = 0; i < 24; i++)
+    {
+        carti_de_joc[i] = i;
+    }
+}
+
+void Impartire_carti (int *carti_amestecate, int carti_jucatori[4][6])
+{
+    srand(time(NULL));
+    
+    for (int i = 22; i > 0; i--)
+    {
+        int j = rand() % (i + 1);
+        int temp = carti_amestecate[i];
+        carti_amestecate[i] = carti_amestecate[j];
+        carti_amestecate[j] = temp;
+    }
+
+    for(int i = 0; i < 24; i=i+4)
+    {
+        carti_jucatori[1][i/4] = carti_amestecate[i];
+        carti_jucatori[2][i/4] = carti_amestecate[i+1];
+        carti_jucatori[3][i/4] = carti_amestecate[i+2];
+        carti_jucatori[0][i/4] = carti_amestecate[i+3];
+    }
+}
+
+void Decodor (int carte)
+{
+    if(carte!=-1)
+    {
+        printf("%d ",carte);
+
+        if(carte%6==0)
+        printf("nouar ");
+        else if(carte%6==5)
+        printf("as ");
+        else if(carte%6==1)
+        printf("doiar ");
+        else if(carte%6==2)
+        printf("treiar ");
+        else if(carte%6==3)
+        printf("patrar ");
+        else if(carte%6==4)
+        printf("zeca ");
+
+        if(carte/6==0)
+            printf("de inima\n");
+        else if(carte/6==1)
+            printf("de frunza\n");
+        else if(carte/6==2)
+            printf("de ghinda\n");
+        else if(carte/6==3)
+            printf("de duba\n");
+    }
+}
+
+int Decodor_punctaj (int carte)
+{
+    if(carte!=-1)
+    {
+        if(carte%6==0)
+        return 0;
+        else if(carte%6==5)
+        return 11;
+        else if(carte%6==1)
+        return 2;
+        else if(carte%6==2)
+        return 3;
+        else if(carte%6==3)
+        return 4;
+        else if(carte%6==4)
+        return 10;
+    }
+    return 0;
+}
