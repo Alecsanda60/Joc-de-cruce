@@ -73,6 +73,7 @@ int decodor_punctaj (int carte)
     }
     return -1;
 }
+///
 
 int cine_le_ia(int masa[8], int tromf)
 {
