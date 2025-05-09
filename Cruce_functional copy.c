@@ -1,14 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <SDL2/SDL.h>
-#include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-
-#define PORT 5555
-#define SERVER_IP "127.0.0.1"
-
 
 
 void Impartire_carti (int *carti_amestecate, int carti_jucatori[4][6])
@@ -216,36 +208,6 @@ void resetare_masa (int masa[8])
 
 int main(void)
 {
-
-    int sock;
-    struct sockaddr_in server_addr;
-    char buffer[1024];
-    char message[1024];
-
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock < 0) {
-        perror("Socket creation failed");
-        exit(EXIT_FAILURE);
-    }
-
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    if (inet_pton(AF_INET, SERVER_IP, &server_addr.sin_addr) <= 0) {
-        perror("Invalid address");
-        close(sock);
-        exit(EXIT_FAILURE);
-    }
-
-    if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        perror("Connection failed");
-        close(sock);
-        exit(EXIT_FAILURE);
-    }
-
-    printf("Connected to server. You can start typing messages...\n");
-    recv(sock, buffer, 2, 0);
-    printf("Server: %s\n", buffer);
-
     int carti_de_joc[24];
     for (int i = 0; i < 24; i++)
     {
