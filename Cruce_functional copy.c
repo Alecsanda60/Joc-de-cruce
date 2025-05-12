@@ -2,6 +2,19 @@
 #include <stdlib.h>
 #include <time.h>
 
+int alegerea_punctajului(int punctaj_ales)
+{
+    scanf("%d", &punctaj_ales);
+    if(punctaj_ales==11 || punctaj_ales==21)
+    {
+        return punctaj_ales;
+    }
+    else
+    {
+        printf("Punctaj invalid! Alege 11 sau 21:\n");
+        alegerea_punctajului(punctaj_ales);
+    }
+}
 
 void Impartire_carti (int *carti_amestecate, int carti_jucatori[4][6])
 {
@@ -51,6 +64,20 @@ void decodor (int carte)
             printf("de ghinda\n");
         else if(carte/6==3)
             printf("de duba\n");
+    }
+}
+
+int verificare_cate_faci(int cate_faci)
+{
+    scanf("%d", &cate_faci);
+    if(cate_faci>=0 && cate_faci<=6)
+    {
+        return cate_faci;
+    }
+    else
+    {
+        printf("Numar invalid! Alege un numar intre 0 si 6:\n");
+        verificare_cate_faci(cate_faci);
     }
 }
 
@@ -215,8 +242,8 @@ int main(void)
     }
 
     int punctaj_ales;
-    printf("Pana la ce scor jucati?\n(Variante uzuale: 11 sau 21)\n");
-    scanf("%d", &punctaj_ales);
+    printf("Pana la ce scor jucati?\n(Variante: 11 sau 21)\n");
+    punctaj_ales=alegerea_punctajului(punctaj_ales);
 
     int carti_jucatori[4][6];
     int punctaj_echipa_impara=0, punctaj_echipa_para=0;
@@ -247,7 +274,7 @@ int main(void)
         printf("\n");
             
         printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", runda%4);
-        scanf("%d", &cate_faci[runda%4]);
+        cate_faci[runda%4]=verificare_cate_faci(cate_faci[runda%4]);
         cine_va_face=runda%4;
 
         printf("Cartile jucatorului %d:\n", (runda+1)%4);
@@ -258,7 +285,7 @@ int main(void)
         printf("\n");
             
         printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+1)%4);
-        scanf("%d", &cate_faci[(runda+1)%4]);
+        cate_faci[(runda+1)%4]=verificare_cate_faci(cate_faci[(runda+1)%4]);
         if(cate_faci[(runda+1)%4]>cate_faci[runda%4])
             cine_va_face=(runda+1)%4;
 
@@ -270,7 +297,7 @@ int main(void)
         printf("\n");
             
         printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+2)%4);
-        scanf("%d", &cate_faci[(runda+2)%4]);
+        cate_faci[(runda+2)%4]=verificare_cate_faci(cate_faci[(runda+2)%4]);
         if(cate_faci[(runda+2)%4]>cate_faci[(runda+cine_va_face-1)%4])
             cine_va_face=(runda+2)%4;
 
@@ -282,7 +309,7 @@ int main(void)
         printf("\n");
             
         printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+3)%4);
-        scanf("%d", &cate_faci[(runda+3)%4]);
+        cate_faci[(runda+3)%4]=verificare_cate_faci(cate_faci[(runda+3)%4]);
         if(cate_faci[(runda+3)%4]>cate_faci[(runda+cine_va_face-1)%4])
             cine_va_face=(runda+3)%4; 
         

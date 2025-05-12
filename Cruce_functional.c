@@ -9,26 +9,17 @@
 #define PORT 5555
 #define SERVER_IP "127.0.0.1"
 
-
-
-void Impartire_carti (int *carti_amestecate, int carti_jucatori[4][6])
+int alegerea_punctajului(int punctaj_ales)
 {
-    srand(time(NULL));
-    
-    for (int i = 22; i > 0; i--)
+    scanf("%d", &punctaj_ales);
+    if(punctaj_ales==11 || punctaj_ales==21)
     {
-        int j = rand() % (i + 1);
-        int temp = carti_amestecate[i];
-        carti_amestecate[i] = carti_amestecate[j];
-        carti_amestecate[j] = temp;
+        return punctaj_ales;
     }
-
-    for(int i = 0; i < 24; i=i+4)
+    else
     {
-        carti_jucatori[1][i/4] = carti_amestecate[i];
-        carti_jucatori[2][i/4] = carti_amestecate[i+1];
-        carti_jucatori[3][i/4] = carti_amestecate[i+2];
-        carti_jucatori[0][i/4] = carti_amestecate[i+3];
+        printf("Punctaj invalid! Alege 11 sau 21:\n");
+        alegerea_punctajului(punctaj_ales);
     }
 }
 
@@ -59,6 +50,20 @@ void decodor (int carte)
             printf("de ghinda\n");
         else if(carte/6==3)
             printf("de duba\n");
+    }
+}
+
+int verificare_cate_faci(int cate_faci)
+{
+    scanf("%d", &cate_faci);
+    if(cate_faci>=0 && cate_faci<=6)
+    {
+        return cate_faci;
+    }
+    else
+    {
+        printf("Numar invalid! Alege un numar intre 0 si 6:\n");
+        verificare_cate_faci(cate_faci);
     }
 }
 
@@ -243,18 +248,41 @@ int main(void)
     }
 
     printf("Connected to server. You can start typing messages...\n");
+    memset(buffer, 0, sizeof(buffer));
     recv(sock, buffer, 2, 0);
     printf("Server: %s\n", buffer);
 
-    int carti_de_joc[24];
-    for (int i = 0; i < 24; i++)
-    {
-        carti_de_joc[i] = i;
+    int cine_esti=buffer[0]-48;
+
+    int ok=0;
+    printf("Se asteapta jucatorii...\n");
+    while(ok==0)
+    { 
+        memset(buffer, 0, sizeof(buffer));
+        recv(sock, buffer, 1024, 0);
+        if(strcmp(buffer,"Start")==0)
+        {
+            ok=1;
+        }
     }
+    printf("Jocul a inceput!\n");
 
     int punctaj_ales;
-    printf("Pana la ce scor jucati?\n(Variante uzuale: 11 sau 21)\n");
-    scanf("%d", &punctaj_ales);
+    if(cine_esti==1)
+    {
+        printf("Pana la ce scor jucati?\n(Variante: 11 sau 21)\n");
+        punctaj_ales=alegerea_punctajului(punctaj_ales);
+        printf("Jocul se termina cand una dintre echipe ajunge la %d puncte\n", punctaj_ales);
+        buffer[0]=punctaj_ales/10;
+        send(sock, buffer, 1024, 0);
+    }
+    else
+    {
+        recv(sock, buffer, 1024, 0);
+        punctaj_ales=buffer[0]*10+1;
+        printf("Jocul se termina cand una dintre echipe ajunge la %d puncte\n", punctaj_ales);
+    }
+    memset(buffer, 0, sizeof(buffer));
 
     int carti_jucatori[4][6];
     int punctaj_echipa_impara=0, punctaj_echipa_para=0;
@@ -272,57 +300,97 @@ int main(void)
 
     while(punctaj_echipa_impara < punctaj_ales && punctaj_echipa_para < punctaj_ales)
     {
-        Impartire_carti(carti_de_joc, carti_jucatori);
         
+        recv(sock, carti_jucatori, sizeof(carti_jucatori), 0);
+
         int cate_faci[4];
         int cine_va_face;
 
-        printf("Cartile jucatorului %d:\n", runda%4);
-        for (int i = 0; i < 6; i++)
+        if(cine_esti==runda%4)
         {
-            decodor(carti_jucatori[runda%4][i]);
-        }
-        printf("\n");
+            printf("Cartile jucatorului %d:\n", runda%4);
+            for (int i = 0; i < 6; i++)
+            {
+                decodor(carti_jucatori[runda%4][i]);
+            }
+            printf("\n");
             
-        printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", runda%4);
-        scanf("%d", &cate_faci[runda%4]);
-        cine_va_face=runda%4;
+            printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", runda%4);
+            cate_faci[runda%4]=verificare_cate_faci(cate_faci[runda%4]);
+            cine_va_face=runda%4;
+            send(sock, cate_faci, sizeof(cate_faci), 0);
+            send(sock, &cine_va_face, sizeof(cine_va_face), 0);
+        }
+        else 
+        {
+            recv(sock, cate_faci, sizeof(cate_faci), 0);
+            recv(sock, &cine_va_face, sizeof(cine_va_face), 0);
+        }
 
-        printf("Cartile jucatorului %d:\n", (runda+1)%4);
-        for (int i = 0; i < 6; i++)
+        if(cine_esti==(runda+1)%4)
         {
-           decodor(carti_jucatori[(runda+1)%4][i]);
-        }
-        printf("\n");
+            printf("Cartile jucatorului %d:\n", (runda+1)%4);
+            for (int i = 0; i < 6; i++)
+            {
+                decodor(carti_jucatori[(runda+1)%4][i]);
+            }
+            printf("\n");
             
-        printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+1)%4);
-        scanf("%d", &cate_faci[(runda+1)%4]);
-        if(cate_faci[(runda+1)%4]>cate_faci[runda%4])
-            cine_va_face=(runda+1)%4;
+            printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+1)%4);
+            cate_faci[(runda+1)%4]=verificare_cate_faci(cate_faci[(runda+1)%4]);
+            if(cate_faci[(runda+1)%4]>cate_faci[runda%4])
+                cine_va_face=(runda+1)%4;
+            send(sock, cate_faci, sizeof(cate_faci), 0);
+            send(sock, &cine_va_face, sizeof(cine_va_face), 0);
+        }        
+        else
+        {
+            recv(sock, cate_faci, sizeof(cate_faci), 0);
+            recv(sock, &cine_va_face, sizeof(cine_va_face), 0);
+        }
 
-        printf("Cartile jucatorului %d:\n", (runda+2)%4);
-        for (int i = 0; i < 6; i++)
+        if(cine_esti==(runda+2)%4)
         {
-            decodor(carti_jucatori[(runda+2)%4][i]);
-        }
-        printf("\n");
+            printf("Cartile jucatorului %d:\n", (runda+2)%4);
+            for (int i = 0; i < 6; i++)
+            {
+                decodor(carti_jucatori[(runda+2)%4][i]);
+            }
+            printf("\n");
             
-        printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+2)%4);
-        scanf("%d", &cate_faci[(runda+2)%4]);
-        if(cate_faci[(runda+2)%4]>cate_faci[(runda+cine_va_face-1)%4])
-            cine_va_face=(runda+2)%4;
-
-        printf("Cartile jucatorului %d:\n", (runda+3)%4);
-        for (int i = 0; i < 6; i++)
+            printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+2)%4);
+            cate_faci[(runda+2)%4]=verificare_cate_faci(cate_faci[(runda+2)%4]);
+            if(cate_faci[(runda+2)%4]>cate_faci[(runda+cine_va_face-1)%4])
+                cine_va_face=(runda+2)%4;
+            send(sock, cate_faci, sizeof(cate_faci), 0);
+            send(sock, &cine_va_face, sizeof(cine_va_face), 0);
+        }
+        else
         {
-            decodor(carti_jucatori[(runda+3)%4][i]);
+            recv(sock, cate_faci, sizeof(cate_faci), 0);
+            recv(sock, &cine_va_face, sizeof(cine_va_face), 0);
         }
-        printf("\n");
+        if(cine_esti==(runda+3)%4)
+        {
+            printf("Cartile jucatorului %d:\n", (runda+3)%4);
+            for (int i = 0; i < 6; i++)
+            {
+                decodor(carti_jucatori[(runda+3)%4][i]);
+            }
+            printf("\n");
             
-        printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+3)%4);
-        scanf("%d", &cate_faci[(runda+3)%4]);
-        if(cate_faci[(runda+3)%4]>cate_faci[(runda+cine_va_face-1)%4])
-            cine_va_face=(runda+3)%4; 
+            printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", (runda+3)%4);
+            cate_faci[(runda+3)%4]=verificare_cate_faci(cate_faci[(runda+3)%4]);
+            if(cate_faci[(runda+3)%4]>cate_faci[(runda+cine_va_face-1)%4])
+                cine_va_face=(runda+3)%4;
+            send(sock, cate_faci, sizeof(cate_faci), 0);
+            send(sock, &cine_va_face, sizeof(cine_va_face), 0);
+        }
+        else
+        {
+            recv(sock, cate_faci, sizeof(cate_faci), 0);
+            recv(sock, &cine_va_face, sizeof(cine_va_face), 0);
+        }
         
         printf("Cine va face: Jucatorul %d\n", cine_va_face);
         printf("Cate face: %d\n", cate_faci[(runda+cine_va_face-1)%4]);
