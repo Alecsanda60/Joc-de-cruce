@@ -12,7 +12,7 @@ int alegerea_punctajului(int punctaj_ales)
     else
     {
         printf("Punctaj invalid! Alege 11 sau 21:\n");
-        alegerea_punctajului(punctaj_ales);
+        return alegerea_punctajului(punctaj_ales);
     }
 }
 
@@ -77,7 +77,7 @@ int verificare_cate_faci(int cate_faci)
     else
     {
         printf("Numar invalid! Alege un numar intre 0 si 6:\n");
-        verificare_cate_faci(cate_faci);
+        return verificare_cate_faci(cate_faci);
     }
 }
 
