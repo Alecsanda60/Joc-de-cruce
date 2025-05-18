@@ -53,8 +53,9 @@ void decodor(int carte)
     }
 }
 
-int verificare_cate_faci(int cate_faci)
+int verificare_cate_faci()
 {
+    int cate_faci;
     scanf("%d", &cate_faci);
     if (cate_faci >= 0 && cate_faci <= 6)
     {
@@ -63,7 +64,7 @@ int verificare_cate_faci(int cate_faci)
     else
     {
         printf("Numar invalid! Alege un numar intre 0 si 6:\n");
-        return verificare_cate_faci(cate_faci);
+        return verificare_cate_faci();
     }
 }
 
@@ -90,12 +91,12 @@ int decodor_punctaj(int carte)
 int cine_le_ia(int masa[8], int tromf)
 {
     int max = 0;
-    int max_tromf = -1;
+    int max_tromf=-1;
     int cine_le_ia = 0;
     int joc_de = masa[0] / 6;
     for (int i = 0; i < 4; i++)
     {
-        if (masa[i] / 6 == joc_de)
+        if (masa[i] / 6 == joc_de && max_tromf==-1)
         {
             if (masa[i] % 6 > max)
             {
@@ -304,7 +305,7 @@ int main(void)
                 }
                 printf("\n");
                 printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", jucator_curent);
-                cate_faci[jucator_curent] = verificare_cate_faci(cate_faci[jucator_curent]);
+                cate_faci[jucator_curent] = verificare_cate_faci();
                 if (cate_faci[jucator_curent] > cate_faci[cine_va_face])
                 {
                     cine_va_face = jucator_curent;
