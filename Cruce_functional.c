@@ -541,3 +541,4 @@ int main(void)
 
     return 0;
 }
+//netestata functia cine_le_ia
