@@ -5,79 +5,66 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <ncurses.h>
-#include <unistd.h>
 
 #define PORT 5555
 #define SERVER_IP "127.0.0.1"
 
-int alegerea_punctajului(int punctaj_ales, int row)
+int alegerea_punctajului(int punctaj_ales)
 {
-    scanw("%d", &punctaj_ales);
+    scanf("%d", &punctaj_ales);
     if (punctaj_ales == 11 || punctaj_ales == 21)
     {
         return punctaj_ales;
     }
     else
     {
-        mvprintw(row-6, 0, "Punctaj invalid! Alege 11 sau 21:\n");
-        refresh();
-        sleep(3);
-        move(row-6, 0);
-        clrtoeol();
-        return alegerea_punctajului(punctaj_ales, row);
+        printf("Punctaj invalid! Alege 11 sau 21:\n");
+        return alegerea_punctajului(punctaj_ales);
     }
 }
 
-void decodor(int carte, int unde, int unde2)
+void decodor(int carte)
 {
     if (carte != 66)
     {
-        mvprintw(unde, unde2 + 0, "%d", carte);
+        printf("%d ", carte);
 
         if (carte % 6 == 0)
-            mvprintw(unde, unde2 + 3, "nouar");
+            printf("nouar ");
         else if (carte % 6 == 5)
-            mvprintw(unde, unde2 + 3, "as");
+            printf("as ");
         else if (carte % 6 == 1)
-            mvprintw(unde, unde2 + 3, "doiar");
+            printf("doiar ");
         else if (carte % 6 == 2)
-            mvprintw(unde, unde2 + 3, "treiar");
+            printf("treiar ");
         else if (carte % 6 == 3)
-            mvprintw(unde, unde2 + 3, "patrar");
+            printf("patrar ");
         else if (carte % 6 == 4)
-            mvprintw(unde, unde2 + 3, "zeca");
+            printf("zeca ");
 
         if (carte / 6 == 0)
-            mvprintw(unde, unde2 + 10, "de inima\n");
+            printf("de inima\n");
         else if (carte / 6 == 1)
-            mvprintw(unde, unde2 + 10, "de frunza\n");
+            printf("de frunza\n");
         else if (carte / 6 == 2)
-            mvprintw(unde, unde2 + 10, "de ghinda\n");
+            printf("de ghinda\n");
         else if (carte / 6 == 3)
-            mvprintw(unde, unde2 + 10, "de duba\n");
+            printf("de duba\n");
     }
-    refresh();
 }
 
-int verificare_cate_faci(int row)
+int verificare_cate_faci()
 {
     int cate_faci;
-    scanw("%d", &cate_faci);
+    scanf("%d", &cate_faci);
     if (cate_faci >= 0 && cate_faci <= 6)
     {
         return cate_faci;
     }
     else
     {
-        move(row, 0);
-        clrtoeol();
-        mvprintw(row-6, 0,"Numar invalid! Alege un numar intre 0 si 6:\n");
-        refresh();
-        sleep(3);
-        move(row-6, 0);
-        clrtoeol();
-        return verificare_cate_faci(row);
+        printf("Numar invalid! Alege un numar intre 0 si 6:\n");
+        return verificare_cate_faci();
     }
 }
 
@@ -104,12 +91,12 @@ int decodor_punctaj(int carte)
 int cine_le_ia(int masa[8], int tromf)
 {
     int max = 0;
-    int max_tromf = -1;
+    int max_tromf=-1;
     int cine_le_ia = 0;
     int joc_de = masa[0] / 6;
     for (int i = 0; i < 4; i++)
     {
-        if (masa[i] / 6 == joc_de && max_tromf == -1)
+        if (masa[i] / 6 == joc_de && max_tromf==-1)
         {
             if (masa[i] % 6 > max)
             {
@@ -149,7 +136,7 @@ void stergerea_cartii_alese(int carti_jucatori[4][6], int masa[8])
     }
 }
 
-int verificare_carte_aleasa_sa_fie_a_jucatorului(int carti_jucatori[4][6], int carte_aleasa, int cine_va_face, int row)
+int verificare_carte_aleasa_sa_fie_a_jucatorului(int carti_jucatori[4][6], int carte_aleasa, int cine_va_face)
 {
     for (int i = 0; i < 6; i++)
     {
@@ -158,19 +145,16 @@ int verificare_carte_aleasa_sa_fie_a_jucatorului(int carti_jucatori[4][6], int c
             return carte_aleasa;
         }
     }
-    mvprintw(row-6,0,"Nu ai aceasta carte in mana!!!Introdu alta carte:");
-    refresh();
-    sleep(3);
-    move(row-6, 0);
-    clrtoeol();
-    scanw("%d", &carte_aleasa);
-    carte_aleasa = verificare_carte_aleasa_sa_fie_a_jucatorului(carti_jucatori, carte_aleasa, cine_va_face,row);
+    printf("Nu ai aceasta carte in mana!!!\n");
+    printf("Introdu alta carte:\n");
+    scanf("%d", &carte_aleasa);
+    carte_aleasa = verificare_carte_aleasa_sa_fie_a_jucatorului(carti_jucatori, carte_aleasa, cine_va_face);
     return carte_aleasa;
 }
 
-int verificare_trisare(int carti_jucatori[4][6], int masa[8], int carte_aleasa, int cine_va_face, int tromf, int row)
+int verificare_trisare(int carti_jucatori[4][6], int masa[8], int carte_aleasa, int cine_va_face, int tromf)
 {
-    carte_aleasa = verificare_carte_aleasa_sa_fie_a_jucatorului(carti_jucatori, carte_aleasa, cine_va_face,row);
+    carte_aleasa = verificare_carte_aleasa_sa_fie_a_jucatorului(carti_jucatori, carte_aleasa, cine_va_face);
     int corect = 1;
     if (masa[0] / 6 == carte_aleasa / 6)
     {
@@ -206,24 +190,18 @@ int verificare_trisare(int carti_jucatori[4][6], int masa[8], int carte_aleasa, 
     }
     if (corect == 0)
     {
-        mvprintw(row-6,0,"Ai carte in mana de acelasi fel ca prima!!!Introdu alta carte:");
-        refresh();
-        sleep(3);
-        move(row-6, 0);
-        clrtoeol();
-        scanw("%d", &carte_aleasa);
-        carte_aleasa = verificare_trisare(carti_jucatori, masa, carte_aleasa, cine_va_face, tromf,row);
+        printf("Ai carte in mana de acelasi fel ca prima!!!\n");
+        printf("Introdu alta carte:\n");
+        scanf("%d", &carte_aleasa);
+        carte_aleasa = verificare_trisare(carti_jucatori, masa, carte_aleasa, cine_va_face, tromf);
         return carte_aleasa;
     }
     else if (corect == 3)
     {
-        mvprintw(row-6,0,"Ai carte de tromf in mana!!!Introdu alta carte:");
-        refresh();
-        sleep(3);
-        move(row-6, 0);
-        clrtoeol();
-        scanw("%d", &carte_aleasa);
-        carte_aleasa = verificare_trisare(carti_jucatori, masa, carte_aleasa, cine_va_face, tromf,row);
+        printf("Ai carte de tromf in mana!!!\n");
+        printf("Introdu alta carte:\n");
+        scanf("%d", &carte_aleasa);
+        carte_aleasa = verificare_trisare(carti_jucatori, masa, carte_aleasa, cine_va_face, tromf);
         return carte_aleasa;
     }
     else
@@ -269,26 +247,15 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    initscr();
-    echo();
-    cbreak();
-    curs_set(0);
-
-    int row, col;
-    getmaxyx(stdscr, row, col);
-
-    mvprintw(0, 0, "Connected to server!\n");
-    refresh();
+    printf("Connected to server. You can start typing messages...\n");
     memset(buffer, 0, sizeof(buffer));
     recv(sock, buffer, 2, 0);
-    mvprintw(1, 0, "Server: %s\n", buffer);
-    refresh();
+    printf("Server: %s\n", buffer);
 
     int cine_esti = buffer[0] - 48;
 
     int ok = 0;
-    mvprintw(2, 0, "Se asteapta jucatorii...\n");
-    refresh();
+    printf("Se asteapta jucatorii...\n");
     while (ok == 0)
     {
         memset(buffer, 0, sizeof(buffer));
@@ -298,39 +265,26 @@ int main(void)
             ok = 1;
         }
     }
-    move(2, 0);
-    clrtoeol();
-    mvprintw(2, 0, "Jocul a inceput!\n");
-    refresh();
+    printf("Jocul a inceput!\n");
 
     int punctaj_ales;
     if (cine_esti == 0)
     {
-        move(2, 0);
-        clrtoeol();
-        mvprintw(2, 0, "Pana la ce scor jucati?\n(Variante: 11 sau 21)\n");
-        refresh();
-        punctaj_ales = alegerea_punctajului(punctaj_ales, row);
-        move(2, 0);
-        clrtoeol();
-        mvprintw(2, 0, "Jocul se termina cand una dintre echipe ajunge la %d puncte\n", punctaj_ales);
-        refresh();
+        printf("Pana la ce scor jucati?\n(Variante: 11 sau 21)\n");
+        punctaj_ales = alegerea_punctajului(punctaj_ales);
+        printf("Jocul se termina cand una dintre echipe ajunge la %d puncte\n", punctaj_ales);
         send(sock, &punctaj_ales, sizeof(punctaj_ales), 0);
     }
     else
     {
         recv(sock, &punctaj_ales, sizeof(punctaj_ales), 0);
-        move(2, 0);
-        clrtoeol();
-        mvprintw(2, 0, "Jocul se termina cand una dintre echipe ajunge la %d puncte\n", punctaj_ales);
-        refresh();
+        printf("Jocul se termina cand una dintre echipe ajunge la %d puncte\n", punctaj_ales);
     }
     memset(buffer, 0, sizeof(buffer));
 
     int carti_jucatori[4][6];
     int punctaj_echipa_impara = 0, punctaj_echipa_para = 0;
     int runda = 0;
-    
 
     while (punctaj_echipa_impara < punctaj_ales && punctaj_echipa_para < punctaj_ales)
     {
@@ -344,15 +298,14 @@ int main(void)
             int jucator_curent = (runda + i) % 4;
             if (cine_esti == jucator_curent)
             {
-                mvprintw(4, 0, "Cartile jucatorului %d:\n", jucator_curent);
-                refresh();
+                printf("Cartile jucatorului %d:\n", jucator_curent);
                 for (int j = 0; j < 6; j++)
                 {
-                    decodor(carti_jucatori[jucator_curent][j], 5+j, 0);
+                    decodor(carti_jucatori[jucator_curent][j]);
                 }
-                mvprintw(11, 0, "Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", jucator_curent);
-                refresh();
-                cate_faci[jucator_curent] = verificare_cate_faci(row);
+                printf("\n");
+                printf("Jucatorul %d cate faci?\n(Optiuni posibile: 0, 1, 2, 3, 4, 5, 6)\n", jucator_curent);
+                cate_faci[jucator_curent] = verificare_cate_faci();
                 if (cate_faci[jucator_curent] > cate_faci[cine_va_face])
                 {
                     cine_va_face = jucator_curent;
@@ -364,38 +317,26 @@ int main(void)
             {
                 recv(sock, cate_faci, sizeof(cate_faci), 0);
                 recv(sock, &cine_va_face, sizeof(cine_va_face), 0);
-                move(3, 0);
-                clrtoeol();
-                mvprintw(3, 0, "Jucatorul %d va face %d\n", cine_va_face, cate_faci[cine_va_face]);
-                refresh();
+                printf("Jucatorul %d va face %d\n", cine_va_face, cate_faci[cine_va_face]);
             }
         }
-
-        for (int i = 3; i <= 12; i++)
-        {
-            move(i, 0);
-            clrtoeol();
-        }
-        mvprintw(3, 0, "Cine va face: Jucatorul %d\n", cine_va_face);
-        refresh();
-        mvprintw(4, 0, "Cate face: %d\n", cate_faci[cine_va_face]);
-        refresh();
+        printf("Cine va face: Jucatorul %d\n", cine_va_face);
+        printf("Cate face: %d\n", cate_faci[cine_va_face]);
 
         int masa[8], punctaj_pe_masa = 0;
         int imparii = 0, parii = 0;
         int tromf = 0, carte_aleasa = 0;
         resetare_masa(masa);
 
-        mvprintw(5, 0, "Jucatorul %d ce carte pui pe masa?\n", cine_va_face);
-        refresh();
+        printf("Jucatorul %d ce carte pui pe masa?\n", cine_va_face);
         if (cine_esti == cine_va_face)
         {
             for (int i = 0; i < 6; i++)
             {
-                decodor(carti_jucatori[cine_va_face][i],6+i,0);
+                decodor(carti_jucatori[cine_va_face][i]);
             }
-            scanw("%d", &carte_aleasa);
-            carte_aleasa = verificare_carte_aleasa_sa_fie_a_jucatorului(carti_jucatori, carte_aleasa, (cine_va_face) % 4,row);
+            scanf("%d", &carte_aleasa);
+            carte_aleasa = verificare_carte_aleasa_sa_fie_a_jucatorului(carti_jucatori, carte_aleasa, (cine_va_face) % 4);
             masa[0] = carte_aleasa;
             masa[4] = masa[0];
             tromf = carte_aleasa;
@@ -406,27 +347,28 @@ int main(void)
         {
             recv(sock, &tromf, sizeof(tromf), 0);
             recv(sock, masa, sizeof(masa), 0);
-            move(5, col - 30);
-            clrtoeol();
-            mvprintw(5, col - 30, "Cartile de pe masa sunt:\n");
-            refresh();
-            for (int k = 0; k < 4; k++)
-            {
-                decodor(masa[k],6+k,col-30);
-            }
         }
         for (int j = 1; j < 4; j++)
         {
-            mvprintw(5, 0, "Jucatorul %d ce carte pui pe masa?\n", (j + cine_va_face) % 4);
-            refresh();
+            printf("Cartile de pe masa sunt:\n");
+            for (int k = 0; k < 4; k++)
+            {
+                decodor(masa[k]);
+            }
+            printf("Jucatorul %d ce carte pui pe masa?\n", (j + cine_va_face) % 4);
             if (cine_esti == (j + cine_va_face) % 4)
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    decodor(carti_jucatori[(j + cine_va_face) % 4][i],6+i,0);
+                    decodor(carti_jucatori[(j + cine_va_face) % 4][i]);
                 }
-                scanw("%d", &carte_aleasa);
-                carte_aleasa = verificare_trisare(carti_jucatori, masa, carte_aleasa, (j + cine_va_face) % 4, tromf,row);
+                scanf("%d", &carte_aleasa);
+                carte_aleasa = verificare_trisare(carti_jucatori, masa, carte_aleasa, (j + cine_va_face) % 4, tromf);
+                if (carte_aleasa == -10)
+                {
+                    printf("Eroare!!!\n");
+                    return 0;
+                }
                 masa[j] = carte_aleasa;
                 masa[j + 4] = masa[j];
                 send(sock, masa, sizeof(masa), 0);
@@ -434,47 +376,30 @@ int main(void)
             else
             {
                 recv(sock, masa, sizeof(masa), 0);
-                move(5, col - 30);
-                clrtoeol();
-                mvprintw(5, col - 30, "Cartile de pe masa sunt:\n");
-                refresh();
-                for (int k = 0; k < 4; k++)
-                {
-                    decodor(masa[k],6+k,col-30);
-                }
             }
         }
         stergerea_cartii_alese(carti_jucatori, masa);
 
-        for (int i = 5; i < 12; i++)
-        {
-            move(i, 0);
-            clrtoeol();
-        }
-        mvprintw(5, 0, "Cartile de pe masa sunt:\n");
-        refresh();
+        printf("Cartile de pe masa sunt:\n");
         for (int j = 0; j < 4; j++)
         {
             punctaj_pe_masa = punctaj_pe_masa + decodor_punctaj(masa[j]);
-            decodor(masa[j],6+j,0);
+            decodor(masa[j]);
         }
 
         if (((cine_le_ia(masa, tromf) + cine_va_face) % 4) % 2 == 1)
         {
-            mvprintw(10, 0, "Echipa imparilor a castigat tura\n");
-            refresh();
+            printf("Echipa imparilor a castigat tura\n");
             imparii = imparii + punctaj_pe_masa;
         }
         else
         {
-            mvprintw(10, 0, "Echipa parilor a castigat tura\n");
-            refresh();
+            printf("Echipa parilor a castigat tura\n");
             parii = parii + punctaj_pe_masa;
         }
         punctaj_pe_masa = 0;
-        mvprintw(0, col - 25, "punctaj impari: %d, %d\n", imparii, punctaj_echipa_impara);
-        mvprintw(1, col - 25, "punctaj pari: %d, %d\n", parii, punctaj_echipa_para);
-        refresh();
+        printf("punctaj impari: %d, %d\n", imparii, punctaj_echipa_impara);
+        printf("punctaj pari: %d, %d\n", parii, punctaj_echipa_para);
         cine_va_face = (cine_le_ia(masa, tromf) + cine_va_face) % 4;
         if (cine_esti == 0)
         {
@@ -484,16 +409,15 @@ int main(void)
 
         for (int i = 0; i < 5; i++)
         {
-            mvprintw(5,0,"Jucatorul %d ce carte pui pe masa?\n", cine_va_face);
-            refresh();
+            printf("Jucatorul %d ce carte pui pe masa?\n", cine_va_face);
             if (cine_esti == cine_va_face)
             {
                 for (int j = 0; j < 6; j++)
                 {
-                    decodor(carti_jucatori[cine_va_face][j],6+j,0);
+                    decodor(carti_jucatori[cine_va_face][j]);
                 }
-                scanw("%d", &carte_aleasa);
-                carte_aleasa = verificare_carte_aleasa_sa_fie_a_jucatorului(carti_jucatori, carte_aleasa, cine_va_face,row);
+                scanf("%d", &carte_aleasa);
+                carte_aleasa = verificare_carte_aleasa_sa_fie_a_jucatorului(carti_jucatori, carte_aleasa, cine_va_face);
                 masa[0] = carte_aleasa;
                 masa[4] = masa[0];
                 send(sock, masa, sizeof(masa), 0);
@@ -501,27 +425,23 @@ int main(void)
             else
             {
                 recv(sock, masa, sizeof(masa), 0);
-                move(5, col - 30);
-                clrtoeol();
-                mvprintw(5, col - 30, "Cartile de pe masa sunt:\n");
-                refresh();
-                for (int k = 0; k < 4; k++)
-                {
-                    decodor(masa[k],6+k,col-30);
-                }
             }
             for (int j = 1; j < 4; j++)
             {
-                mvprintw(5,0,"Jucatorul %d ce carte pui pe masa?\n", (j + cine_va_face) % 4);
-                refresh();
-                if ((j + cine_va_face) % 4 == cine_esti)
+                printf("Cartile de pe masa sunt:\n");
+                for (int k = 0; k < 4; k++)
+                {
+                    decodor(masa[k]);
+                }
+                printf("Jucatorul %d ce carte pui pe masa?\n", (j + cine_va_face) % 4);
+                if ((j + cine_va_face)%4 == cine_esti)
                 {
                     for (int i = 0; i < 6; i++)
                     {
-                        decodor(carti_jucatori[(j + cine_va_face) % 4][i],6+i,0);
+                        decodor(carti_jucatori[(j + cine_va_face) % 4][i]);
                     }
-                    scanw("%d", &carte_aleasa);
-                    carte_aleasa = verificare_trisare(carti_jucatori, masa, carte_aleasa, (j + cine_va_face) % 4, tromf,row);
+                    scanf("%d", &carte_aleasa);
+                    carte_aleasa = verificare_trisare(carti_jucatori, masa, carte_aleasa, (j + cine_va_face) % 4, tromf);
                     masa[j] = carte_aleasa;
                     masa[j + 4] = masa[j];
                     send(sock, masa, sizeof(masa), 0);
@@ -529,51 +449,30 @@ int main(void)
                 else
                 {
                     recv(sock, masa, sizeof(masa), 0);
-                    move(5, col - 30);
-                    clrtoeol();
-                    mvprintw(5, col - 30, "Cartile de pe masa sunt:\n");
-                    refresh();
-                    for (int k = 0; k < 4; k++)
-                    {
-                        decodor(masa[k],6+k,col-30);
-                    }
                 }
             }
 
             stergerea_cartii_alese(carti_jucatori, masa);
 
-            for (int i = 5; i < 12; i++)
-            {
-                move(i, 0);
-                clrtoeol();
-            }
-            mvprintw(5, 0, "Cartile de pe masa sunt:\n");
-            refresh();
+            printf("Cartile de pe masa sunt:\n");
             for (int j = 0; j < 4; j++)
             {
                 punctaj_pe_masa = punctaj_pe_masa + decodor_punctaj(masa[j]);
-                decodor(masa[j],6+j,0);
+                decodor(masa[j]);
             }
             if (((cine_le_ia(masa, tromf) + cine_va_face) % 4) % 2 == 1)
             {
-                mvprintw(10, 0, "Echipa imparilor a castigat tura\n");
-                refresh();
+                printf("Echipa imparilor a castigat tura\n");
                 imparii = imparii + punctaj_pe_masa;
             }
             else
             {
-                mvprintw(11, 0, "Echipa parilor a castigat tura\n");
-                refresh();
+                printf("Echipa parilor a castigat tura\n");
                 parii = parii + punctaj_pe_masa;
             }
             punctaj_pe_masa = 0;
-            move(0, col - 25);
-            clrtoeol();
-            move(1, col - 25);
-            clrtoeol();
-            mvprintw(0, col - 25, "punctaj impari: %d, %d\n", imparii, punctaj_echipa_impara);
-            mvprintw(1, col - 25, "punctaj pari: %d, %d\n", parii, punctaj_echipa_para);
-            refresh();
+            printf("punctaj impari: %d, %d\n", imparii, punctaj_echipa_impara);
+            printf("punctaj pari: %d, %d\n", parii, punctaj_echipa_para);
             cine_va_face = (cine_le_ia(masa, tromf) + cine_va_face) % 4;
             if (cine_esti == 0)
             {
@@ -622,13 +521,8 @@ int main(void)
 
         imparii = 0;
         parii = 0;
-        move(0, col - 25);
-        clrtoeol();
-        move(1, col - 25);
-        clrtoeol();
-        mvprintw(0, col - 25, "punctaj impari: %d, %d\n", imparii, punctaj_echipa_impara);
-        mvprintw(1, col - 25, "punctaj pari: %d, %d\n", parii, punctaj_echipa_para);
-        refresh();
+        printf("punctaj impari: %d, %d\n", imparii, punctaj_echipa_impara);
+        printf("punctaj pari: %d, %d\n", parii, punctaj_echipa_para);
 
         if (cine_esti == 0)
         {
@@ -639,12 +533,12 @@ int main(void)
         runda = runda + 1;
     }
     if (punctaj_echipa_impara > punctaj_echipa_para)
-        mvprintw(row / 2, (col / 2) - 20, "Echipa imparilor a castigat cu %d puncte!", punctaj_echipa_impara);
+        printf("Echipa imparilor a castigat cu %d puncte!\n", punctaj_echipa_impara);
     else if (punctaj_echipa_impara < punctaj_echipa_para)
-        mvprintw(row / 2, (col / 2) - 19, "Echipa parilor a castigat cu %d puncte!", punctaj_echipa_para);
+        printf("Echipa parilor a castigat cu %d puncte!\n", punctaj_echipa_para);
     else
-        mvprintw(row / 2, (col / 2) - 4, "Remiza!!");
+        printf("Remiza!\n");
 
-    endwin();
     return 0;
 }
+//netestata functia cine_le_ia

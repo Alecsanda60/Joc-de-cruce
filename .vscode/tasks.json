@@ -3,7 +3,7 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: gcc build with SDL2",
+            "label": "C/C++: gcc build with ncurses",
             "command": "/usr/bin/gcc",
             "args": [
                 "-fdiagnostics-color=always",
@@ -11,9 +11,9 @@
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "-I/usr/include/SDL2",
+                "-I/usr/include/ncurses",
                 "-D_REENTRANT",
-                "-lSDL2"
+                "-lncurses"
         ],
             "options": {
                 "cwd": "${fileDirname}",
