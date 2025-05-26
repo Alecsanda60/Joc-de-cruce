@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #define PORT 5555
-#define SERVER_IP "127.0.0.1"
+#define SERVER_IP "10.0.2.15"
 
 int alegerea_punctajului(int punctaj_ales, int row)
 {
